@@ -25,13 +25,18 @@ var images = {};
     images[imgName] = img;
 });
 
-
+class Entity {
+    render(ctx) {
+        ctx.drawImage(this.sprite, this.x, this.y);
+    }
+}
 
 
 
 // This section is where you will be doing most of your coding
-class Enemy {
+class Enemy extends Entity {
     constructor(xPos) {
+        super();
         this.x = xPos;
         this.y = -ENEMY_HEIGHT;
         this.sprite = images['enemy.png'];
@@ -44,13 +49,14 @@ class Enemy {
         this.y = this.y + timeDiff * this.speed;
     }
 
-    render(ctx) {
+    /*render(ctx) {
         ctx.drawImage(this.sprite, this.x, this.y);
-    }
+    }*/
 }
 
-class Player {
+class Player extends Entity {
     constructor() {
+        super();
         this.x = 2 * PLAYER_WIDTH;
         this.y = GAME_HEIGHT - PLAYER_HEIGHT - 10;
         this.sprite = images['player.png'];
@@ -66,9 +72,9 @@ class Player {
         }
     }
 
-    render(ctx) {
+    /*render(ctx) {
         ctx.drawImage(this.sprite, this.x, this.y);
-    }
+    }*/
 }
 
 
@@ -120,7 +126,7 @@ class Engine {
 
         var enemySpot;
         // Keep looping until we find a free enemy spot at random
-        while (!enemySpot || this.enemies[enemySpot]) {
+        while (!enemySpot && this.enemies[enemySpot]) {
             enemySpot = Math.floor(Math.random() * enemySpots);
         }
 
@@ -199,8 +205,18 @@ class Engine {
     }
 
     isPlayerDead() {
-        // TODO: fix this function!
-        return false;
+        // 
+        var flag = false
+        this.enemies.forEach((enemy, enemyIdx) => {
+            if (
+                enemy.y > this.player.y - ENEMY_HEIGHT * 0.7
+                && enemy.y < this.player.y - 5
+                && enemy.x === this.player.x
+            ) {
+                flag = true;
+            }
+        });
+        return flag;
     }
 }
 
